@@ -1,4 +1,4 @@
-package Jason;
+package prueba;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -59,12 +59,11 @@ public class ejercicio1 {
 	}
 	public JsonObject prediccionMeteorilogica(String ciudad) {
 		String obj ="http://api.openweathermap.org/data/2.5/weather?q="+ciudad+",es&lang=es&APPID=8f8dccaf02657071004202f05c1fdce0";
-	
+		
 		return null;
 	}
 	public static void main(String[] args) {
-		//Crea un mï¿½todo, usando Open Weather Map, que dada una localidad devuelva un JsonObject con
-		//los datos devueltos de las predicciones meteorolï¿½gicas.
+		//Crea un método, usando Open Weather Map, que dada una localidad devuelva un JsonObject con
+		//los datos devueltos de las predicciones meteorológicas.
 	}
 }
-

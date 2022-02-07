@@ -34,18 +34,17 @@ public class Ejercicio1 {
 	}
 
 	public void NombresDeLaDataBase(String cadena) throws SQLException {
-		Ejercicio1 db = new Ejercicio1();
 		int cont = 0;
 		String query = "Select nombre from alumnos where nombre like '%" + cadena + "%'";
-		db.abrirConexion("add", "localhost", "root", "");
-		Statement stm = db.conexion.createStatement();
+		abrirConexion("add", "localhost", "root", "");
+		Statement stm = conexion.createStatement();
 		ResultSet rs = stm.executeQuery(query);
 		while (rs.next()) {
 			System.out.println("Nombre: " + rs.getString("nombre"));
 			cont++;
 		}
 		stm.close();
-		db.cerrarConexion();
+		cerrarConexion();
 		System.out.println("Número de Resultados: " + cont);
 	}
 

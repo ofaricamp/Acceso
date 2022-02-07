@@ -1,10 +1,13 @@
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Enumeration;
 
 public class Ejercicios {
 
@@ -129,7 +132,7 @@ public class Ejercicios {
 		return aula;
 	}
 
-	public void Ejercicio5b() throws SQLException {
+	public int Ejercicio5b() throws SQLException {
 		String query = "SELECT DISTINCT aulas.nombreAula FROM aulas INNER JOIN alumnos ON aulas.numero = alumnos.aula";
 		System.out.println(query);
 		abrirConexion("add", "localhost", "root", "");
@@ -141,17 +144,19 @@ public class Ejercicios {
 			}
 			stm.execute(query);
 			stm.close();
+			return ejecutadorDeQuerys(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			cerrarConexion();
 		} finally {
 			cerrarConexion();
 		}
+		return -1;
 	}
 
 	private PreparedStatement ps = null;
 
-	public void Ejercicio6a(String patron, int valor) {
+	public int Ejercicio6a(String patron, int valor) {
 		String query = "Select nombre,altura from alumnos where nombre LIKE ? AND altura > ?";
 		try {
 			conexion = DriverManager.getConnection("jdbc:mariadb://localhost:3306/add?useServerPrepStmts=true", "root",
@@ -168,15 +173,17 @@ public class Ejercicios {
 			while (rs.next()) {
 				System.out.println("Nombre: " + rs.getString("nombre") + " Altura: " + rs.getInt("altura"));
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			cerrarConexion();
 		} finally {
 			cerrarConexion();
 		}
+		return ejecutadorDeQuerys(query);
 	}
 
-	public void Ejercicio6b(String patron, int valor) {
+	public int Ejercicio6b(String patron, int valor) {
 		abrirConexion("add", "localhost", "root", "");
 		try (Statement stm = conexion.createStatement();) {
 			String query = "Select nombre,altura from alumnos where nombre like '%" + patron + "%' AND altura >"
@@ -184,12 +191,21 @@ public class Ejercicios {
 			System.out.println(query);
 
 			ResultSet rs = stm.executeQuery(query);
+			while (rs.next()) {
+				System.out.println(rs.getString("nombre") + " " + rs.getInt("altura"));
+			}
+
+			stm.close();
+			cerrarConexion();
+			return ejecutadorDeQuerys(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			cerrarConexion();
 		} finally {
 			cerrarConexion();
+
 		}
+		return -1;
 	}
 
 	public int ejercicio8(String tabla, String nombreDelCampo, String tipoDeDato, String propiedades) {
@@ -201,7 +217,7 @@ public class Ejercicios {
 
 	public void Ejercicio9apartadoA(String bd) {
 		DatabaseMetaData dbmt;
-		abrirConexion("add", "localhost", "root", "");
+		abrirConexion(bd, "localhost", "root", "");
 		try {
 
 			dbmt = conexion.getMetaData();
@@ -223,7 +239,7 @@ public class Ejercicios {
 	public void Ejercicio9apartadoB(String bd) {
 		DatabaseMetaData dbmt;
 		ResultSet tablas;
-		abrirConexion("add", "localhost", "root", "");
+		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
 			// tablas = dbmt.getTables(bd, null, null, null);
@@ -241,7 +257,7 @@ public class Ejercicios {
 	public void Ejercicio9apartadoC(String bd) {
 		DatabaseMetaData dbmt;
 		ResultSet tablas;
-		abrirConexion("add", "localhost", "root", "");
+		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
 			tablas = dbmt.getTables(bd, null, null, null);
@@ -259,7 +275,7 @@ public class Ejercicios {
 	public void Ejercicio9apartadoD(String bd) {
 		DatabaseMetaData dbmt;
 		ResultSet tablas;
-		abrirConexion("add", "localhost", "root", "");
+		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
 			tablas = dbmt.getTables(bd, null, null, null);
@@ -280,7 +296,7 @@ public class Ejercicios {
 	public void Ejercicio9apartadoE(String bd) {
 		DatabaseMetaData dbmt;
 		ResultSet tablas, catalog;
-		abrirConexion("add", "localhost", "root", "");
+		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
 			tablas = dbmt.getTables(bd, null, null, null);
@@ -296,10 +312,10 @@ public class Ejercicios {
 			cerrarConexion();
 		}
 	}
-	
+
 	public void Ejercicio9apartadoF(String bd) {
 		DatabaseMetaData dbmt;
-		abrirConexion("add", "localhost", "root", "");
+		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
 			ResultSet rs = dbmt.getProcedures(bd, null, null);
@@ -312,34 +328,95 @@ public class Ejercicios {
 			cerrarConexion();
 		}
 	}
-	
+
 	public void Ejercicio9apartadoG(String bd) {
 		DatabaseMetaData dbtm;
-		abrirConexion("add", "localhost", "root", "");
+		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbtm = conexion.getMetaData();
 			ResultSet rs = dbtm.getColumns(bd, null, null, null);
 			while (rs.next()) {
 				if (rs.getString("COLUMN_NAME").startsWith("a")) {
-					System.out.println(rs.getString("COLUMN_RELATIVE"));
+					System.out.println(rs.getString("ORDINAL_POSITION"));
+					System.out.println(rs.getString("TABLE_CAT"));
+					System.out.println(rs.getString("TABLE_NAME"));
 					System.out.println(rs.getString("COLUMN_NAME"));
-					System.out.println(rs.getString("COLUMN_TYPE"));
+					System.out.println(rs.getString("TYPE_NAME"));
 					System.out.println(rs.getString("COLUMN_SIZE"));
+					System.out.println(rs.getString("IS_NULLABLE"));
+					System.out.println(rs.getString("IS_AUTOINCREMENT"));
+					System.out.println("------------------------------");
 				}
+			}
+			// cerrarConexion();
+		} catch (SQLException e) {
+			System.out.println("Error obteniendo datos " + e.getLocalizedMessage());
+			// cerrarConexion();
+		} finally {
+			cerrarConexion();
+		}
+	}
+
+	public void Ejercicio9apartadoH(String bd) {
+		DatabaseMetaData dbtm;
+		ResultSet rs;
+		ResultSet rs2;
+		abrirConexion(bd, "localhost", "root", "");
+		try {
+			dbtm = conexion.getMetaData();
+			rs = dbtm.getPrimaryKeys(bd, null, null);
+			rs2 = dbtm.getExportedKeys(bd, null, null);
+			System.out.println("\n Primary Keys");
+			System.out.println("---------------------");
+			while (rs.next()) {
+				System.out.println(rs.getString("COLUMN_NAME"));
+			}
+			System.out.println("\n Exported Keys");
+			System.out.println("---------------------");
+			while (rs2.next()) {
+				System.out.println(rs2.getString("FKCOLUMN_NAME"));
 			}
 		} catch (SQLException e) {
 			System.out.println("Error obteniendo datos " + e.getLocalizedMessage());
-		}finally {
+		} finally {
 			cerrarConexion();
+		}
+	}
+
+	public void Ejercicio10(String query) throws SQLException {
+		abrirConexion("add", "localhost", "root", "");
+		Statement stm = this.conexion.createStatement();
+		ResultSet filas = stm.executeQuery(query);
+		ResultSetMetaData rst = filas.getMetaData();
+		for (int i = 1; i <= rst.getColumnCount(); i++) {
+			System.out.println("Nombre: " + rst.getColumnName(i) + "\tLabel: " + rst.getColumnLabel(i) + "\tTipo:"
+					+ rst.getColumnTypeName(i) + "\tAutoincremento: " + rst.isAutoIncrement(i) + "\t NULO: "
+					+ rst.isNullable(i));
+		}
+	}
+
+	public void Ejercicio11() throws SQLException {
+
+		abrirConexion("add", "localhost", "root", "");
+		
+		Enumeration<Driver> driver = DriverManager.getDrivers();
+		Driver aux;
+		
+		while (driver.hasMoreElements()) {
+			aux = driver.nextElement();
+			System.out.println(aux.toString());
 		}
 	}
 
 	public static void main(String[] args) throws SQLException {
 		Ejercicios p = new Ejercicios();
-		//p.Ejercicio1("J");
-		//System.out.println("----------------------------------------------");
-		//p.Ejercicio1("F");
-		//p.Ejercicio2a("Alváro", "Virgolini", 500, 20);
-		p.Ejercicio9apartadoG("add");
+		// p.Ejercicio1("J");
+		// System.out.println("----------------------------------------------");
+		// p.Ejercicio1("F");
+		// p.Ejercicio2a("Alváro", "Virgolini", 500, 20);
+		// p.Ejercicio9apartadoG("add");
+		// p.Ejercicio9apartadoH("add");
+		//p.Ejercicio10("select *, nombre as non from alumnos");
+		p.Ejercicio11();
 	}
 }

@@ -61,10 +61,10 @@ public class Ejercicio5 {
 	}
 	
 	public void alumnosQueAprobaron() throws SQLException {
-		String query = "SELECT DISTINCT alumnos.nombre,asignaturas.NOMBRE,notas.NOTA \r\n"
-				+ "FROM alumnos,asignaturas,notas \r\n"
-				+ "WHERE notas.NOTA >= 5 \r\n"
-				+ "AND alumnos.codigo = notas.alumno\r\n"
+		String query = "SELECT DISTINCT alumnos.nombre,asignaturas.NOMBRE,notas.NOTA"
+				+ "FROM alumnos,asignaturas,notas"
+				+ "WHERE notas.NOTA >= 5"
+				+ "AND alumnos.codigo = notas.alumno"
 				+ "AND asignaturas.COD = notas.asignatura";
 		System.out.println(query);
 		ej1.abrirConexion("add","localhost","root","");

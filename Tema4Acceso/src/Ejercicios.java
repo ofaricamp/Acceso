@@ -63,10 +63,8 @@ public class Ejercicios {
 			while (rs.next()) {
 				System.out.println("Nombre: " + rs.getString("nombre"));
 				cont++;
-			}
-			stm.close();
-			cerrarConexion();
-			System.out.println("Número de Resultados: " + cont);
+			}	
+			System.out.println("Número de Resultados: " + cont+" "+(rs.getRow()-1));
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -78,33 +76,32 @@ public class Ejercicios {
 	public int Ejercicio2a(String nombre, String apellido, int altura, int aula) throws SQLException {
 		String query = "INSERT INTO alumnos(nombre,apellidos,altura,aula) VALUES (\"" + nombre + "\", \"" + apellido
 				+ " \"," + altura + "," + aula + ")";
-		System.out.println(query);
+		//System.out.println(query);
 		return ejecutadorDeQuerys(query);
-
 	}
 
 	public int Ejercicio2b(String nombre) throws SQLException {
 		String query = "INSERT INTO asignaturas(NOMBRE) VALUES \"" + nombre + "\"";
-		System.out.println(query);
+//		System.out.println(query);
 		return ejecutadorDeQuerys(query);
 	}
 
 	public int Ejercicio3a(int IdAlumnos) throws SQLException {
 		String query = "DELETE FROM alumnos WHERE codigo = " + IdAlumnos;
-		System.out.println(query);
+//		System.out.println(query);
 		return ejecutadorDeQuerys(query);
 	}
 
 	public int Ejercicio3b(int idAsignatura) throws SQLException {
 		String query = "DELETE FROM asignaturas WHERE COD=\"" + idAsignatura + "\"";
-		System.out.println(query);
+//		System.out.println(query);
 		return ejecutadorDeQuerys(query);
 	}
 
 	public int Ejercicio4a(String nombre, String apellido, int altura, int aula, int codigo) throws SQLException {
 		String query = "UPDATE alumnos SET nombre =\"" + nombre + "\",apellidos =\"" + apellido + "\",altura=" + altura
 				+ ", aula=" + aula + " WHERE codigo=" + codigo;
-		System.out.println(query);
+//		System.out.println(query);
 		return ejecutadorDeQuerys(query);
 	}
 
@@ -125,7 +122,6 @@ public class Ejercicios {
 
 		} catch (SQLException w) {
 			w.printStackTrace();
-			cerrarConexion();
 		} finally {
 			cerrarConexion();
 		}
@@ -143,20 +139,36 @@ public class Ejercicios {
 				System.out.println(rs.getString("nombreAula"));
 			}
 			stm.execute(query);
-			stm.close();
-			return ejecutadorDeQuerys(query);
+			//return ejecutadorDeQuerys(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			cerrarConexion();
 		} finally {
 			cerrarConexion();
 		}
 		return -1;
 	}
 
+	public void Ejercicio6a(String patron, int valor) {
+		abrirConexion("add", "localhost", "root", "");
+		try (Statement stm = conexion.createStatement();) {
+			String query = "Select nombre,altura from alumnos where nombre like '%" + patron + "%' AND altura >"
+					+ valor;
+			System.out.println(query);
+			ResultSet rs = stm.executeQuery(query);
+			while (rs.next()) {
+				System.out.println(rs.getString("nombre") + " " + rs.getInt("altura"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			cerrarConexion();
+		}
+	//	return -1;
+	}
+	
 	private PreparedStatement ps = null;
 
-	public int Ejercicio6a(String patron, int valor) {
+	public int Ejercicio6b(String patron, int valor) {
 		String query = "Select nombre,altura from alumnos where nombre LIKE ? AND altura > ?";
 		try {
 			conexion = DriverManager.getConnection("jdbc:mariadb://localhost:3306/add?useServerPrepStmts=true", "root",
@@ -176,40 +188,14 @@ public class Ejercicios {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			cerrarConexion();
 		} finally {
 			cerrarConexion();
 		}
-		return ejecutadorDeQuerys(query);
-	}
-
-	public int Ejercicio6b(String patron, int valor) {
-		abrirConexion("add", "localhost", "root", "");
-		try (Statement stm = conexion.createStatement();) {
-			String query = "Select nombre,altura from alumnos where nombre like '%" + patron + "%' AND altura >"
-					+ valor;
-			System.out.println(query);
-
-			ResultSet rs = stm.executeQuery(query);
-			while (rs.next()) {
-				System.out.println(rs.getString("nombre") + " " + rs.getInt("altura"));
-			}
-
-			stm.close();
-			cerrarConexion();
-			return ejecutadorDeQuerys(query);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			cerrarConexion();
-		} finally {
-			cerrarConexion();
-
-		}
-		return -1;
+		return 0; // ejecutadorDeQuerys(query);
 	}
 
 	public int ejercicio8(String tabla, String nombreDelCampo, String tipoDeDato, String propiedades) {
-		String query = "CREATE OR REPLACE TABLE " + tabla + "(" + nombreDelCampo + " " + tipoDeDato + "(" + propiedades
+		String query = "ALTER TABLE " + tabla + "(" + nombreDelCampo + " " + tipoDeDato + "(" + propiedades
 				+ ")";
 		System.out.println(query);
 		return ejecutadorDeQuerys(query);
@@ -219,7 +205,6 @@ public class Ejercicios {
 		DatabaseMetaData dbmt;
 		abrirConexion(bd, "localhost", "root", "");
 		try {
-
 			dbmt = conexion.getMetaData();
 
 			System.out.println(dbmt.getDriverName());
@@ -242,7 +227,6 @@ public class Ejercicios {
 		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
-			// tablas = dbmt.getTables(bd, null, null, null);
 			tablas = dbmt.getCatalogs();
 			while (tablas.next()) {
 				System.out.println(tablas.getString("TABLE_CAT"));
@@ -265,10 +249,10 @@ public class Ejercicios {
 				System.out.println(
 						"NOMBRE: " + tablas.getString("TABLE_NAME") + "\n Type: " + tablas.getString("TABLE_TYPE"));
 			}
-		} catch (
-
-		SQLException e) {
+		} catch (SQLException e) {
 			System.out.println("Error obteniendo datos " + e.getLocalizedMessage());
+		}finally {
+			cerrarConexion();
 		}
 	}
 
@@ -278,13 +262,13 @@ public class Ejercicios {
 		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
-			tablas = dbmt.getTables(bd, null, null, null);
+			tablas = dbmt.getTables(bd, null, null, new String[] {"VIEW"});
 
 			while (tablas.next()) {
-				if (tablas.getString("TABLE_TYPE").equals("VIEW")) {
+				//if (tablas.getString("TABLE_TYPE").equals("VIEW")) {
 					System.out.println(
 							"NOME: " + tablas.getString("TABLE_NAME") + " Type: " + tablas.getString("TABLE_TYPE"));
-				}
+			//	}
 			}
 		} catch (SQLException e) {
 			System.out.println("Error obteniendo datos " + e.getLocalizedMessage());
@@ -299,12 +283,14 @@ public class Ejercicios {
 		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbmt = conexion.getMetaData();
-			tablas = dbmt.getTables(bd, null, null, null);
+			//tablas = dbmt.getTables(bd, null, null, null);
 			catalog = dbmt.getCatalogs();
-			while (tablas.next()) {
-				System.out.println("Catalog: " + catalog.getString("TABLE_CAT"));
-				System.out.println(
-						"\nNOME: " + tablas.getString("TABLE_NAME") + " Type: " + tablas.getString("TABLE_TYPE"));
+			while (catalog.next()) {
+				System.out.println("\nCatalog: " + catalog.getString("TABLE_CAT"));
+				tablas = dbmt.getTables(catalog.getString("TABLE_CAT"), null, null, null);
+				while (tablas.next()) {	
+					System.out.println("\nNOME: " + tablas.getString("TABLE_NAME") + " Type: " + tablas.getString("TABLE_TYPE"));
+				}
 			}
 		} catch (SQLException e) {
 			System.out.println("Error obteniendo datos " + e.getLocalizedMessage());
@@ -334,9 +320,8 @@ public class Ejercicios {
 		abrirConexion(bd, "localhost", "root", "");
 		try {
 			dbtm = conexion.getMetaData();
-			ResultSet rs = dbtm.getColumns(bd, null, null, null);
+			ResultSet rs = dbtm.getColumns(bd, null, "a%", null);
 			while (rs.next()) {
-				if (rs.getString("COLUMN_NAME").startsWith("a")) {
 					System.out.println(rs.getString("ORDINAL_POSITION"));
 					System.out.println(rs.getString("TABLE_CAT"));
 					System.out.println(rs.getString("TABLE_NAME"));
@@ -346,12 +331,9 @@ public class Ejercicios {
 					System.out.println(rs.getString("IS_NULLABLE"));
 					System.out.println(rs.getString("IS_AUTOINCREMENT"));
 					System.out.println("------------------------------");
-				}
 			}
-			// cerrarConexion();
 		} catch (SQLException e) {
 			System.out.println("Error obteniendo datos " + e.getLocalizedMessage());
-			// cerrarConexion();
 		} finally {
 			cerrarConexion();
 		}
@@ -407,6 +389,8 @@ public class Ejercicios {
 			System.out.println(aux.toString());
 		}
 	}
+	
+	
 
 	public static void main(String[] args) throws SQLException {
 		Ejercicios p = new Ejercicios();
@@ -414,9 +398,10 @@ public class Ejercicios {
 		// System.out.println("----------------------------------------------");
 		// p.Ejercicio1("F");
 		// p.Ejercicio2a("Alváro", "Virgolini", 500, 20);
-		// p.Ejercicio9apartadoG("add");
+		//p.Ejercicio9apartadoG("add");
+		p.Ejercicio9apartadoE("add");
 		// p.Ejercicio9apartadoH("add");
 		//p.Ejercicio10("select *, nombre as non from alumnos");
-		p.Ejercicio11();
+		//p.Ejercicio11();
 	}
 }

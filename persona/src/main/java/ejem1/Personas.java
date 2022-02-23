@@ -8,11 +8,13 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Path ("/personas")
 public class Personas {
@@ -61,8 +63,11 @@ public class Personas {
 		@Path("add")
 		@Consumes ({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 		@Produces(MediaType.TEXT_PLAIN)
-		public String Insertar() {
-			return "";
+		public String Insertar(ArrayList<Persona> p) {
+			for (int i = 0; i < p.size(); i++) {
+				personas.add(p.get(i));
+			}
+			return "todo correcto";
 		}
 		
 		
@@ -79,4 +84,16 @@ public class Personas {
 			}
 			return "error al borrar";
 		}
+		
+		@GET
+		@Path("XML")
+		@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+		public ArrayList<Persona> listarXML() {
+			return this.personas;
+		}
+		/*
+		 
+11. Nos piden que los nombre de los atributos devueltos deben estar en gallego. Crea un método en el
+path galego que realice esta acción.
+12. Modifica los ejercicios anteriores para que devuelvan el Response adecuado.*/
 }

@@ -1,5 +1,6 @@
 package ejem1;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -21,6 +22,8 @@ public class Persona {
 		this.casado = casado;
 		this.sexo = sexo;
 	}
+	
+	@XmlAttribute
 	public int getId() {
 		return id;
 	}

@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DB {
-	private Connection conexion;
+	public Connection conexion;
 
 	public void abrirConexion(String bd, String servidor, String usuario, String password) {
 		try {

@@ -39,7 +39,7 @@ public class Personas {
 		
 		// Ejercicio 3
 		@GET
-		@Path("{nombre}")
+		@Path("/{nombre}")
 		@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 		public Response ver(@PathParam("nombre") String name) {
 			for (Persona persona : personas) {
@@ -52,7 +52,7 @@ public class Personas {
 		
 		// Ejercicio 4 junto con el 9
 		@GET
-		@Path("buscar")
+		@Path("/buscar")
 		@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 		public Response verEjer3(@DefaultValue("pepe") @QueryParam("nombre") String name) {
 			//System.out.println(name);
@@ -66,7 +66,7 @@ public class Personas {
 		
 		//Ejercicio 7
 		@POST
-		@Path("add")
+		@Path("/add")
 		@Consumes ({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 		@Produces(MediaType.TEXT_PLAIN)
 		public Response Insertar(ArrayList<Persona> personas) {
@@ -79,7 +79,7 @@ public class Personas {
 		
 		//Ejercicio 8
 		@DELETE
-		@Path("{id}")
+		@Path("/{id}")
 		@Produces(MediaType.TEXT_PLAIN)
 		public Response Borrar(@PathParam("id") int id) {
 			//for (Persona persona : personas) {
@@ -99,12 +99,10 @@ public class Personas {
 		getter @XmlAttribute para que sea un atributo, pero esto solo se aprecia en el XML puesto que en 
 		JSON ignora el @XmlAttribute*/
 		@GET
-		@Path("XML")
+		@Path("/XML")
 		@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 		public Response XMLAtributo(){
 			//return this.personas;
 			return Response.ok(this.personas).build();
-		}
-		
-		
+		}		
 }
